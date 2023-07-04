@@ -1,6 +1,14 @@
 provider "aws" {
   region = "us-east-2"
 }
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
 resource "aws_launch_configuration" "example" {
   image_id        = "ami-0fb653ca2d3203ac1"
   instance_type   = "t2.micro"
@@ -18,7 +26,10 @@ resource "aws_launch_configuration" "example" {
 }
 
 resource "aws_autoscaling_group" "example" {
-  launch_configuration = aws_launch_configuration.example.name  min_size = 2
+  launch_configuration = aws_launch_configuration.example.name
+  vpc_zone_identifier = data.aws_subnets.default.ids
+
+  min_size = 2
   max_size = 10
 
   tag {
