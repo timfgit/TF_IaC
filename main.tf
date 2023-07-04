@@ -2,6 +2,10 @@ provider "aws" {
   region = "us-east-2"
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
